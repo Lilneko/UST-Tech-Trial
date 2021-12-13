@@ -17,6 +17,10 @@ namespace USTTechTrial.Controllers
         public OrderController(OrderContext context){
             _context = context;
         }
+        public OrderController()
+        {
+            _context = new OrderContext();
+        }
 
         /// <summary>
         /// Get the complete list of orders.
