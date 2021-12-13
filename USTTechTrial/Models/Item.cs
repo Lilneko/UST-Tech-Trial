@@ -22,9 +22,9 @@ namespace USTTechTrial.Models
         public int type { get; set; } = 1;
 
 
-        public decimal subTotal { get; set; }
-        public decimal vatPercentage { get; set; }
-        public decimal totalWithVat { get; set; }
+        public decimal? subTotal { get; set; }
+        public decimal? vatPercentage { get; set; }
+        public decimal? totalWithVat { get; set; }
 
     }
 }

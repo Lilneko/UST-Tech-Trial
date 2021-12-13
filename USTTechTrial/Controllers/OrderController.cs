@@ -13,27 +13,39 @@ namespace USTTechTrial.Controllers
     public class OrderController : ControllerBase
     {
         private OrderContext _context;
-        private readonly ILogger<OrderController> _logger;
 
-        public OrderController(OrderContext context, ILogger<OrderController> logger){
+        public OrderController(OrderContext context){
             _context = context;
-            _logger = logger;
         }
 
+        /// <summary>
+        /// Get the complete list of orders.
+        /// </summary>
+        /// <returns>List<Order></returns>
         [HttpGet]
         [Route("GetAllOrders")]
-        public async Task<ActionResult<List<Order>>> GetAllOrders([FromServices] OrderContext context)
+        public async Task<ActionResult<List<Order>>> GetAllOrders()
         {
-            var orders = await context.Orders.Include(c=> c.items).ToListAsync();
-            if(orders == null) { return NotFound(); }
+            var orders = await _context.Orders.Include(c=> c.items).ToListAsync();
+            if(orders == null) { 
+                return NotFound(); 
+            }
+
             return Ok(orders);
         }
 
+        /// <summary>
+        /// Post a Order and calculate price values.
+        /// </summary>
+        /// <param name="order">Order class</param>
+        /// <returns>Order with calculated values</returns>
         [HttpPost]
         [Route("PostOrder")]
-        public async Task<ActionResult<Order>> PostOrder([FromServices] OrderContext context, [FromBody] Order order)
+        public async Task<ActionResult<Order>> PostOrder([FromBody] Order order)
         {
-            if(!ModelState.IsValid) { return BadRequest(ModelState); }
+            if(!ModelState.IsValid) { 
+                return BadRequest(ModelState); 
+            }
 
             foreach(Item item in order.items ?? new List<Item>()){
                 item.subTotal = item.units * item.pricePerUnit;
@@ -42,9 +54,10 @@ namespace USTTechTrial.Controllers
                 order.total += item.totalWithVat;
             };
 
-             context.Orders.Add(order);
-             await context.SaveChangesAsync();
-             return Ok(order);
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+
+            return Ok(order);
         }
     }
 }
